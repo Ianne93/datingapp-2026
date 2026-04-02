@@ -1,23 +1,21 @@
 using API.Data;
 using API.Entities;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")] //localhost:5000/api/members
-    [ApiController]
-    public class MembersController(AppDbContext context) : ControllerBase
+    public class MembersController(AppDbContext context) : BaseApiController
     {
         [HttpGet]
-        public async Task <ActionResult<IReadOnlyList<AppUser>>> GetMembers()
+        public async Task<ActionResult<IReadOnlyList<AppUser>>> GetMembers()
         {
             var members = await context.Users.ToListAsync();
             return members;
-            
-        }
 
+        }
+        [Authorize]//per accedere a questo endpoint è necessario essere autenticati, altrimenti verrà restituito un errore 401 Unauthorized.
         [HttpGet("{id}")] //localhost:5000/api/members/bob-id
         public async Task<ActionResult<AppUser>> GetMember(string id)
         {
